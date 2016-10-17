@@ -1,0 +1,7 @@
+name: bcalc
+version: 0.0.1
+description: A simple console application.
+dependencies:
+  csv:
+  stack_trace:
+#  foo_bar: '>=1.0.0 <2.0.0'
