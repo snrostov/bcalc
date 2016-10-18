@@ -2,6 +2,8 @@
 
 import 'package:bcalc/heat.dart';
 
+/// TSample => необходимое количетсва тепла (Вт) для нагрева
+/// до указанной температуры внутри
 class QBox implements Transformer<TSample, double> {
   double s; // м2
   double k; // Вт/(м2·oС)

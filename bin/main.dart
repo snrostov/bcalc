@@ -46,11 +46,21 @@ typedef Key(TSample t);
 class AggGroup {
   String name;
   Map map = new SplayTreeMap();
-  Key key;
+  Key groupBy;
+  Key filter;
 
-  AggGroup(this.name, this.key);
+  AggGroup({this.name, this.groupBy: null, this.filter: null});
 
-  Agg get(TSample t, bool isHeaterOn) => map.putIfAbsent(key(t), () => new Agg());
+  Agg get(TSample t, bool isHeaterOn) {
+    if (filter == null || filter(t)) {
+      var key;
+      if (this.groupBy != null) {
+        key = this.groupBy(t);
+        if (key is List) key = new Tuple(key);
+      } else key = "";
+      return map.putIfAbsent(key, () => new Agg());
+    } else return new Agg();
+  }
 
   printIt() {
     print("");
@@ -64,6 +74,24 @@ class AggGroup {
   }
 }
 
+class Tuple implements Comparable {
+  List<Comparable> list = [];
+
+  Tuple(this.list);
+
+  @override
+  String toString() => list.toString();
+
+  @override
+  int compareTo(Tuple other) {
+    for (var i = 0; i < other.list.length; i++) {
+      var compareTo = list[i].compareTo(other.list[i]);
+      if (compareTo != 0) return compareTo;
+    }
+    return 0;
+  }
+}
+
 calc() async {
   print("Loading data...");
 
@@ -74,8 +102,8 @@ calc() async {
   print("Sampling...");
 
   List<AggGroup> groups = [
-    new AggGroup("all", (t) => 0),
-    new AggGroup("by month", (TSample t) => t.from.month),
+    new AggGroup(name: "all"),
+    new AggGroup(name: "by month", groupBy: (TSample t) => [t.from.month, timeOfDayKind(t)]),
   ];
 
   for (var t in temps) {
@@ -106,6 +134,10 @@ calc() async {
     g.printIt();
   }
 }
+
+String timeOfDayKind(TSample t) => isNight(t) ? "1.night" : "0.day";
+
+bool isNight(TSample t) => (t.from.hour > 22 || t.from.hour < 7);
 
 main(List<String> args) {
   calc();
