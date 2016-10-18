@@ -103,7 +103,8 @@ calc() async {
 
   List<AggGroup> groups = [
     new AggGroup(name: "all"),
-    new AggGroup(name: "by month", groupBy: (TSample t) => [t.from.month, timeOfDayKind(t)]),
+//    new AggGroup(name: "by month, day", groupBy: (TSample t) => [t.from.month, timeOfDayKind(t)]),
+    new AggGroup(name: "by month", groupBy: (TSample t) => [t.from.month]),
   ];
 
   for (var t in temps) {
@@ -115,7 +116,7 @@ calc() async {
         q += e.transform(t);
       }
 
-      fuel = heater.transform(new QTime(kwh: q / 1000, h: t.hours));
+      fuel = heater.transform(new QTime(kw: q / 1000, h: t.hours));
     }
 
     for (var g in groups) {

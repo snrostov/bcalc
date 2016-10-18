@@ -1,16 +1,16 @@
 import 'fuel.dart';
 
 class QTime {
-  final double kwh;
+  final double kw;
   final double h;
 
-  const QTime({this.kwh, this.h});
+  const QTime({this.kw, this.h});
 
-  operator +(QTime b) => new QTime(kwh: kwh + b.kwh, h: h + b.h);
+  operator +(QTime b) => new QTime(kw: kw + b.kw, h: h + b.h);
 
   @override
   String toString() {
-    return 'Heat{kw: $kwh, h: $h}';
+    return 'Heat{kw: $kw, h: $h}';
   }
 }
 
@@ -27,6 +27,8 @@ class FuelK {
 
 class Heater implements Transformer<QTime, Map<FuelType, double>> {
   final Map<FuelType, FuelK> k;
+  double minPower = 10.9;
+  double maxPower = 31.1;
 
   Heater(this.k);
 
@@ -34,7 +36,7 @@ class Heater implements Transformer<QTime, Map<FuelType, double>> {
   Map<FuelType, double> transform(QTime x) {
     Map<FuelType, double> result = new Map<FuelType, double>();
     k.forEach((f, k) {
-      result[f] = k.perKwH * x.kwh * x.h + k.perH * x.h;
+      result[f] = k.perKwH * x.kw * x.h + k.perH * x.h;
     });
     return result;
   }
